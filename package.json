@@ -4,15 +4,19 @@
   "description": "迷你微博",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node app.js",
+    "dev": "nodemon"
   },
   "author": "张绍俊",
   "license": "ISC",
   "dependencies": {
     "ejs": "^2.7.1",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "formidable": "^1.2.1",
     "gm": "^1.23.1",
-    "mongodb": "^3.3.2"
+    "mongodb": "^3.3.2",
+    "nodemon": "^1.19.3"
   }
 }
