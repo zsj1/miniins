@@ -3,27 +3,32 @@ var db = require('../models/db');
 var md5 = require('../models/md5');
 var session = require('express-session');
 // 首页
-exports.showIndex = function(req, res, next) {
-     res.render("index", {
+exports.showIndex = function (req, res, next) {
+    res.render("index", {
         "login": req.session.login === "1" ? true : false,
         "username": req.session.login === "1" ? req.session.account : "",
-     });
+        "active": "index"
+    });
 }
 
 // 注册页面
-exports.showRegister = function(req, res, next) {
-    res.render("register");
+exports.showRegister = function (req, res, next) {
+    res.render("register", {
+        "login": req.session.login === "1" ? true : false,
+        "username": req.session.login === "1" ? req.session.account : "",
+        "active": "register"
+    });
 }
 
 // 注册业务
-exports.doRegister = function(req, res, next) {
+exports.doRegister = function (req, res, next) {
     // 获取账户名和密码
     var form = new formidable.IncomingForm();
-    form.parse(req, function(err, fileds, files) {
+    form.parse(req, function (err, fileds, files) {
         var username = fileds.account;
         var password = fileds.password;
         // 查询用户名是否重复
-        db.find("users", {"username": username}, function(err, result){
+        db.find("users", { "username": username }, function (err, result) {
             if (err) {
                 res.send("-3");
                 return;
@@ -38,7 +43,7 @@ exports.doRegister = function(req, res, next) {
             db.insertOne("users", {
                 "username": username,
                 "password": password,
-            }, function(err, result){
+            }, function (err, result) {
                 if (err) {
                     res.send("-3");
                     return;
@@ -53,19 +58,23 @@ exports.doRegister = function(req, res, next) {
 }
 
 // 登录页面
-exports.showLogin = function(req, res, next) {
-    res.render("login");
+exports.showLogin = function (req, res, next) {
+    res.render("login", {
+        "login": req.session.login === "1" ? true : false,
+        "username": req.session.login === "1" ? req.session.account : "",
+        "active": "login"
+    });
 }
 
 // 登录业务
-exports.doLogin = function(req, res, next) {
+exports.doLogin = function (req, res, next) {
     // 获取账户名和密码
     var form = new formidable.IncomingForm();
-    form.parse(req, function(err, fileds, files) {
+    form.parse(req, function (err, fileds, files) {
         var username = fileds.account;
         var password = fileds.password;
         // 查询用户名是否存在
-        db.find("users", {"username": username}, function(err, result){
+        db.find("users", { "username": username }, function (err, result) {
             if (err) {
                 res.send("-3");
                 return;
@@ -93,7 +102,7 @@ exports.doLogin = function(req, res, next) {
 }
 
 // 登出业务
-exports.doLogout = function(req, res, next) {
+exports.doLogout = function (req, res, next) {
     if (req.session.login === "1") {
         req.session.destroy();
         res.redirect('/');
