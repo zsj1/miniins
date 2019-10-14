@@ -19,5 +19,8 @@ app.use(session({
 app.get("/", router.showIndex);
 app.get("/register", router.showRegister);
 app.post("/doregister", router.doRegister);
+app.get("/login", router.showLogin);
+app.post("/dologin", router.doLogin);
+app.get("/dologout", router.doLogout);
 
 app.listen(3000);
