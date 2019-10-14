@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>setAvatar - ins</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+</head>
+
+<body>
+    <% include header.ejs %>
+    <div class="container">
+        <div class="row">
+            <h1>Welcome to setAvatar!</h1>
+            <form method="post" action="/dosetavatar" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="account">Select Avatar</label>
+                    <input type="file" class="form-control" id="avatar" name="avatar">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+
+        <hr>
+
+        <footer>
+            <p>&copy; 2019 Author, Sliver.</p>
+        </footer>
+    </div>
+
+
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+    </script>
+</body>
+
+</html>

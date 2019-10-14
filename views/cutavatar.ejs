@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>cutAvatar - ins</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/css/jquery.Jcrop.css">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <style type="text/css">
+        #cutAvatarBtn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <% include header.ejs %>
+    <div class="container">
+        <div class="row">
+            <h1>Welcome to cutAvatar!</h1>
+            <img src="/avatar/<%=avatar%>" id="target" alt="[Jcrop Example]" />
+
+            <div id="preview-pane">
+                <div class="preview-container">
+                    <img src="/avatar/<%=avatar%>" class="jcrop-preview" alt="Preview" />
+                </div>
+            </div>
+            <button type="button" id="cutAvatarBtn" class="btn btn-default">cutAvatar</button>
+        </div>
+
+        <hr>
+
+        <footer>
+            <p>&copy; 2019 Author, Sliver.</p>
+        </footer>
+    </div>
+
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/jquery.Jcrop.js"></script>
+    <script type="text/javascript" src="/js/xiaoguo.js"></script>
+    <script type="text/javascript">
+        $("#cutAvatarBtn").click(function () {
+            var w = parseInt($(".jcrop-holder>div:first").css("width"));
+            var h = parseInt($(".jcrop-holder>div:first").css("height"));
+            var x = parseInt($(".jcrop-holder>div:first").css("left"));
+            var y = parseInt($(".jcrop-holder>div:first").css("top"));
+
+            $.get("/docutavatar", {
+                "w": w,
+                "h": h,
+                "x": x,
+                "y": y
+            }, function (result) {
+                if (result === "1") {
+                    alert("头像设置成功！");
+                    window.location.href = "/";
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

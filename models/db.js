@@ -6,7 +6,7 @@ var settings = require("../settings.js");
 function _connectDB(callback) {
     var url = settings.dburl;   //从settings文件中，都数据库地址
     //连接数据库
-    MongoClient.connect(url, function (err, db) {
+    MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function (err, db) {
         if (err) {
             callback(err, null);
             return;

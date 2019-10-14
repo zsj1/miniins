@@ -27,7 +27,7 @@
         %>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/">Welcome ! <%=username%></a></li>
-            <li><a href="">Settings</a></li>
+            <li <% if (active === "settings") { %> class="active" <% } %> ><a href="">Settings</a></li>
             <li><a href="/dologout">Logout</a></li>
           </ul>
         <%
