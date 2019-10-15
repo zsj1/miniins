@@ -243,7 +243,7 @@ exports.doPostDynamic = function (req, res, next) {
     });
 }
 
-// 列出所有动态业务
+// 列出所有动态业务 未完成后台分页
 exports.doGetAllDynamics = function (req, res, next) {
     // var page = req.query.page;
     // "pageamount": 10, "page": page, 
