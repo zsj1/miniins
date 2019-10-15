@@ -14,48 +14,94 @@
 
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/jumbotron.css" rel="stylesheet">
+  <style type="text/css">
+    #dangerAlert {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .grid {
+      height: 100px;
+      overflow: auto;
+      margin-top: 5px;
+    }
+
+    .avatar {
+      border: 0px;
+      border-radius: 50%;
+    }
+
+    .detdynamic-footer {
+      color: #003366;
+      font-size: 13px;
+    }
+
+    .dynamic-header {
+      color: #003366;
+      font-weight: 500;
+      font-family: Arial, Helvetica, sans-serif;
+      margin-bottom: 1px;
+    }
+  </style>
 </head>
 
 <body>
   <% include header.ejs %>
   <!-- Main jumbotron for a primary marketing message or call to action -->
   <div class="jumbotron">
+    <% if(!login) { %>
     <div class="container">
-      <h1>
-        <a href="/setavatar"><img src="/avatar/<%=avatar%>" alt=""></a>
-        Hello, world!
-      </h1>
-      <p>This is a template for a simple marketing or informational website. It includes a large callout called a
-        jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.
-      </p>
-      <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+      <div class="row">
+        <h1>
+          Welcome to miniIns！
+        </h1>
+      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <p>This is a very simple dynamic sharing site.</p>
+          <p> Welcome to join us!</p>
+          <p>
+            <a class="btn btn-primary" href="/register" role="button">Sign Up &raquo;</a>
+          </p>
+        </div>
+        <div class="col-lg-6">
+          <p>If you already have an account, please sign in.</p>
+          <div id="dangerAlert">
+            <div class="alert alert-danger" role="alert"></div>
+          </div>
+          <form>
+            <div class="form-group">
+              <label for="account">Account</label>
+              <input placeholder="please input account……" type="text" class="form-control" id="account">
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="please input password……">
+            </div>
+            <button type="button" id="loginBtn" class="btn btn-primary">Sign In &raquo;</button>
+          </form>
+        </div>
+      </div>
     </div>
+    <%} else {%>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-1">
+          <a href="/setavatar"><img src="/avatar/<%=avatar%>" alt="" class="avatar"></a>
+          <p style="text-align: center;width: 100px;"><%=username%></p>
+        </div>
+        <div class="col-lg-8 col-lg-offset-1">
+          <textarea name="dynamicContent" id="dynamicContent" cols="80" rows="6"></textarea><br>
+          <button type="button" id="postBtn" class="btn btn-primary">Post Dynamic&raquo;</button>
+        </div>
+      </div>
+    </div>
+    <%}%>
   </div>
 
   <div class="container">
-    <!-- Example row of columns -->
-    <div class="row">
-      <div class="col-md-4">
-        <h2>Heading</h2>
-        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris
-          condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod.
-          Donec sed odio dui. </p>
-        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-      </div>
-      <div class="col-md-4">
-        <h2>Heading</h2>
-        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris
-          condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod.
-          Donec sed odio dui. </p>
-        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-      </div>
-      <div class="col-md-4">
-        <h2>Heading</h2>
-        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta
-          felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum
-          massa justo sit amet risus.</p>
-        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-      </div>
+    <div class="row" id="allDynamicDiv">
+
     </div>
 
     <hr>
@@ -64,9 +110,102 @@
       <p>&copy; 2019 Author, Sliver.</p>
     </footer>
   </div>
+
+  <script type="text/template" id="dynamicDiv">
+    <div class="col-lg-4 col-md-6 col-xs-12">
+      <p class="dynamic-header">
+        <img width="35" src="/avatar/{{=avatar}}" alt="" class="avatar">
+        {{=username}}
+      </p>
+      <div class="grid">
+          {{=content}}
+      </div>
+      <p>
+        <a class="detdynamic-footer" href="#">
+          Details
+        </a>
+      </p>
+      <hr/>
+    </div>
+  </script>
+
   <script src="/js/underscore-noflect.js"></script>
   <script src="/js/jquery-1.11.3.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+    // ajax读取动态
+    $(function(){
+      var login = <%=login%>;
+      if (login) {
+        $.ajax({
+          url: "/getalldynamics",
+          type: "get",
+          success: function(result){
+            $('#allDynamicDiv').children().remove();
+            var compiled = _.template($('#dynamicDiv').html());
+            (function iterator(i){
+              if (i === result.dynamics.length) {
+                return;
+              }
+              let data = {...result.dynamics[i]};
+              $.ajax({
+                url: `/getuserinfo?username=${result.dynamics[i].username}`,
+                type: "get",
+                success: function (result2) {
+                  data['avatar'] = result2.userInfo.avatar;
+                  $('#allDynamicDiv').append(compiled(data));
+                  iterator(i + 1);
+                },
+              });
+            })(0);
+          }
+        });
+      }
+    });
+    $('input').focus(function () {
+        $('#dangerAlert').fadeOut();
+    });
+    $('#loginBtn').click(function () {
+        // 注册ajax提交表单
+        $.post("/dologin", {
+            "account": $("#account").val(),
+            "password": $("#password").val(),
+        }, function (result) {
+            if (result === "1") {
+                // 登录成功
+                window.location.href = '/';
+            } else if (result === "-1") {
+                // 用户名不存在
+                $('#dangerAlert').fadeIn();
+                $('#dangerAlert>div:first-child').html("用户名不存在，请检查输入。");
+            } else if (result === "-2") {
+                // 密码错误
+                $('#dangerAlert').fadeIn();
+                $('#dangerAlert>div:first-child').html("用户名与密码不匹配，请检查输入。");
+            } else if (result === "-3") {
+                // 服务器错误
+                $('#dangerAlert').fadeIn();
+                $('#dangerAlert>div:first-child').html("服务器出错，请重新尝试。");
+            }
+        });
+    })
+    $('#postBtn').click(function () {
+      // 发表动态ajax提交表单
+      $.post("/dopostdynamic", {
+            "dynamicContent": $("#dynamicContent").val(),
+        }, function (result) {
+            if (result === "1") {
+                // 发布成功
+                alert("发布成功");
+                window.location.href = "/";
+            } else if (result === "-3") {
+                // 服务器错误
+                $('#dangerAlert').fadeIn();
+                $('#dangerAlert>div:first-child').html("服务器出错，请重新尝试。");
+            }
+        });
+    })
+</script>
 </body>
 
 </html>

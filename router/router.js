@@ -8,24 +8,43 @@ var gm = require("gm");
 // 首页
 exports.showIndex = function (req, res, next) {
     // 查找头像
-    if (req.session.login === "1") {
-        db.find("users", { username: req.session.account }, function (err, result) {
-            var avatar = result[0].avatar || "default.jpg";
-            res.render("index", {
-                "login": req.session.login === "1" ? true : false,
-                "username": req.session.login === "1" ? req.session.account : "",
-                "active": "index",
-                "avatar": avatar
-            });
-        });
-    } else {
+    var avatar = "default.jpg";
+    // db.find("users", { "username": req.session.login === "1" ? req.session.account : "" }, function (err, result) {
+    //     if (result.length !== 0) {
+    //         avatar = result[0].avatar || "default.jpg";            
+    //     }
+    //     db.find("posts", {}, {"sort": { "datetime": -1}}, function(err, result2) {
+    //         var dynamics = new Array();
+    //         (function iterator(i){
+    //             //遍历结束
+    //             if(i === result2.length) {
+    //                 res.render("index", {
+    //                     "login": req.session.login === "1" ? true : false,
+    //                     "username": req.session.login === "1" ? req.session.account : "",
+    //                     "active": "index",
+    //                     "avatar": avatar,
+    //                     "dynamics": req.session.login === "1" ? dynamics : [],
+    //                 });
+    //                 return;
+    //             }
+    //             db.find("users", { "username": result2[i].username }, function (err, result3) {
+    //                 dynamics.push({...result2[i], avatar: result3[0].avatar || "default.jpg"});
+    //                 iterator(i+1);
+    //             });
+    //         })(0);
+    //     })
+    // });
+    db.find("users", { "username": req.session.login === "1" ? req.session.account : "" }, function (err, result) {
+        if (result.length !== 0) {
+            avatar = result[0].avatar || "default.jpg";            
+        }
         res.render("index", {
             "login": req.session.login === "1" ? true : false,
             "username": req.session.login === "1" ? req.session.account : "",
             "active": "index",
-            "avatar": "default.jpg"
+            "avatar": avatar,
         });
-    }
+    });
 }
 
 // 注册页面
@@ -201,4 +220,44 @@ exports.doCutAvatar = function (req, res, next) {
                 }
             );
         });
+}
+
+// 发表动态业务
+exports.doPostDynamic = function (req, res, next) {
+    // 获取动态内容
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fileds, files) {
+        var content = fileds.dynamicContent;
+        // 插入该条动态
+        db.insertOne("posts", {
+            "username": req.session.account,
+            "content": content,
+            "datetime": new Date(),
+        }, function (err, result) {
+            if (err) {
+                res.send("-3");
+                return;
+            }
+            res.send("1");
+        });
+    });
+}
+
+// 列出所有动态业务
+exports.doGetAllDynamics = function (req, res, next) {
+    // var page = req.query.page;
+    // "pageamount": 10, "page": page, 
+    db.find("posts", {}, {"sort": {"datetime": -1}}, function(err, result) {
+        res.json({"dynamics": result});
+    });
+}
+
+// 列出用户信息业务
+exports.doGetUserInfo = function (req, res, next) {
+    var username = req.query.username;
+    db.find("users", {"username": username}, function(err, result) {
+        let {password, ...data} = result[0];
+        data['avatar'] = result[0].avatar || "default.jpg";  
+        res.json({"userInfo": data});
+    });
 }

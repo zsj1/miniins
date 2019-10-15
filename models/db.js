@@ -15,6 +15,20 @@ function _connectDB(callback) {
     });
 }
 
+// function init() {
+//     _connectDB(function (err, db) {
+//         db.db('ins').collection("users").createIndex(
+//             {"username" : 1},
+//             null,
+//             function(err, results) {
+//                 db.close(); //关闭数据库
+//             }
+//         )
+//     })
+// }
+// init();
+
+
 //插入数据
 exports.insertOne = function (collectionName, json, callback) {
     _connectDB(function (err, db) {

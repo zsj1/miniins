@@ -28,4 +28,9 @@ app.get("/setavatar", router.showSetAvatar);
 app.post("/dosetavatar", router.doSetAvatar);
 app.get("/cutavatar", router.showCutAvatar);
 app.get("/docutavatar", router.doCutAvatar);
+app.post("/dopostdynamic", router.doPostDynamic);
+app.get("/getalldynamics", router.doGetAllDynamics);
+app.get("/getuserinfo", router.doGetUserInfo);
+
+
 app.listen(3000);
