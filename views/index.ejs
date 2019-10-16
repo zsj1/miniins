@@ -37,14 +37,18 @@
     }
 
     .dynamic-header {
-      color: #003366;
-      font-weight: 500;
-      font-family: Arial, Helvetica, sans-serif;
       margin-bottom: 1px;
     }
 
+    .dynamic-header>a{
+      color: #003366;
+      font-weight: 500;
+      font-family: Arial, Helvetica, sans-serif;
+      text-decoration: none;
+    }
+
     #paginatorDiv {
-      text-align: center;
+      text-align: center; 
     }
   </style>
 </head>
@@ -121,14 +125,16 @@
   <script type="text/template" id="dynamicDiv">
     <div class="col-lg-4 col-md-6 col-xs-12">
       <p class="dynamic-header">
-        <img width="35" src="/avatar/{{=avatar}}" alt="" class="avatar">
-        {{=username}}
+        <a href="/user/{{=userid}}">
+          <img width="35" src="/avatar/{{=avatar}}" alt="" class="avatar">
+          {{=username}}
+        </a>
       </p>
       <div class="grid">
           {{=content}}
       </div>
       <p>
-        <a class="detdynamic-footer" href="#">
+        <a class="detdynamic-footer" href="/dynamic/{{=_id}}">
           Details
         </a>
       </p>
@@ -194,6 +200,7 @@
               type: "get",
               success: function (result2) {
                 data['avatar'] = result2.userInfo.avatar;
+                data['userid'] = result2.userInfo._id;
                 $('#allDynamicDiv').append(compiled(data));
                 iterator(i + 1);
               },
@@ -202,7 +209,6 @@
         }
       });
     }
-    
     $('input').focus(function () {
         $('#dangerAlert').fadeOut();
     });

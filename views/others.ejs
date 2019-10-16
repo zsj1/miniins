@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>others - ins</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <style type="text/css">
+        .grid {
+            height: 20px;
+            overflow: auto;
+            margin-top: 5px;
+        }
+        .avatar {
+            border: 0px;
+            border-radius: 50%;
+        }
+
+        .dynamic-header {
+            margin-bottom: 1px;
+        }
+
+        .dynamic-header>a{
+            color: #003366;
+            font-weight: 500;
+            font-family: Arial, Helvetica, sans-serif;
+            text-decoration: none;
+        }
+
+        .card-outter {
+            padding: 10px 15px;
+        } 
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            height: 100px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+            padding: 10px;
+        }
+
+        .card:hover {
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+        }
+    </style>
+</head>
+
+<body>
+    <% include header.ejs %>
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <%for(var i = 0; i < userList.length; i++) {%>
+                    <div class="col-lg-3 col-md-4 col-xs-6 card-outter">
+                        <div class="card">
+                            <p class="dynamic-header">
+                                <a href="/user/<%=userList[i]._id%>">
+                                    <img width="35" src="/avatar/<%=userList[i].avatar%>" alt="" class="avatar">
+                                    <%=userList[i].username%>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                <%}%>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <hr>
+        <footer>
+            <p>&copy; 2019 Author, Sliver.</p>
+        </footer>
+    </div>
+
+
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $('div.card').click(function(event){
+            window.location.href = $(event.target).find('a').attr('href');
+        });
+    </script>
+</body>
+
+</html>

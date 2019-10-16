@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title><%=userInfo.username%> - ins</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <style type="text/css">
+        .grid {
+            height: 100px;
+            overflow: auto;
+            margin-top: 5px;
+        }
+        .avatar {
+            border: 0px;
+            border-radius: 50%;
+        }
+        .detdynamic-footer {
+            color: #003366;
+            font-size: 13px;
+        }
+
+        .dynamic-header {
+            margin-bottom: 1px;
+        }
+
+        .dynamic-header>a{
+            color: #003366;
+            font-weight: 500;
+            font-family: Arial, Helvetica, sans-serif;
+            text-decoration: none;
+        }
+        
+        .user-header h2 {
+            padding-left: 30px;
+            margin: 0;
+            line-height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <% include header.ejs %>
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-1">
+                    <a href="/setavatar"><img src="/avatar/<%=userInfo.avatar%>" alt="" class="avatar"></a>
+                </div>
+                <div class="col-lg-8 user-header">
+                    <h2><%=userInfo.username%></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <%for(var i = 0; i < userDynamics.length; i++) {%>
+                <div class="col-lg-4 col-md-6 col-xs-12">
+                    <p class="dynamic-header">
+                        <a href="/user/<%=userDynamics[i]._id%>">
+                        <img width="35" src="/avatar/<%=userDynamics[i].avatar%>" alt="" class="avatar">
+                        <%=userDynamics[i].username%>
+                        </a>
+                    </p>
+                    <div class="grid">
+                        <%=userDynamics[i].content%>
+                    </div>
+                    <p>
+                        <a class="detdynamic-footer" href="/dynamic/<%=_id%>">
+                            Details
+                        </a>
+                    </p>
+                    <hr/>
+                </div>
+            <%}%>
+        </div>
+        <hr>
+    
+        <footer>
+            <p>&copy; 2019 Author, Sliver.</p>
+        </footer>
+    </div>
+
+
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+    </script>
+</body>
+
+</html>

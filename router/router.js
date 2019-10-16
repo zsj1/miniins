@@ -5,6 +5,7 @@ var session = require('express-session');
 var path = require("path");
 var fs = require("fs");
 var gm = require("gm");
+var ObjectID = require('mongodb').ObjectID;
 // 首页
 exports.showIndex = function (req, res, next) {
     // 查找头像
@@ -266,4 +267,127 @@ exports.doGetUserInfo = function (req, res, next) {
         data['avatar'] = result[0].avatar || "default.jpg";  
         res.json({"userInfo": data});
     });
+}
+
+// 点击头像进入用户主页
+exports.showUser = function (req, res, next) {
+    if (req.session.login === "1") {
+        var avatar = "default.jpg";
+        db.find("users", { "username": req.session.account }, function (err, result) {
+            if (result.length !== 0) {
+                avatar = result[0].avatar || "default.jpg";            
+            }
+            var _id = req.params.userid;
+            db.find("users", {"_id": ObjectID(_id)}, function(err, result2) {
+                if (req.session.account === result2[0].username) {
+                    res.redirect('/me');
+                    return;
+                }
+                let {password, ...data} = result2[0];
+                data['avatar'] = result2[0].avatar || "default.jpg";  
+                db.find("posts", {"username": data['username']}, function(err, result3) {
+                    var dynamics = new Array();
+                    for (var i = 0; i < result3.length; i++) {
+                        dynamics.push({...result3[i], ...data});
+                    }
+                    res.render("user", {
+                        "login": true,
+                        "username": req.session.account,
+                        "active": "user",
+                        "avatar": avatar,
+                        "userInfo": data,
+                        "userDynamics": dynamics
+                    });
+                });    
+            });
+        });
+    } else {
+        res.setHeader("Content-Type", "text/plain;charset=utf-8");
+        res.end("非法闯入，这个页面要求登录！");
+    }
+}
+
+// 点击进入Me页面
+exports.showMe = function (req, res, next) {
+    if (req.session.login === "1") {
+        var avatar = "default.jpg";
+        db.find("users", { "username": req.session.account }, function (err, result) {
+            if (result.length !== 0) {
+                avatar = result[0].avatar || "default.jpg";            
+            }
+            let {password, ...data} = result[0];
+            data['avatar'] = result[0].avatar || "default.jpg";
+            db.find("posts", {"username": req.session.account}, function(err, result2) {
+                var dynamics = new Array();
+                for (var i = 0; i < result2.length; i++) {
+                    dynamics.push({...result2[i], ...data});
+                }
+                res.render("user", {
+                    "login": true,
+                    "username": req.session.account,
+                    "active": "me",
+                    "avatar": avatar,
+                    "userInfo": data,
+                    "userDynamics": dynamics
+                });
+            });    
+        });
+    } else {
+        res.redirect("/login");
+    }
+}
+
+// 点击进入用户列表Others页面
+exports.showUserList = function (req, res, next) {
+    if (req.session.login === "1") {
+        var avatar = "default.jpg";
+        db.find("users", { "username": req.session.account }, function (err, result) {
+            if (result.length !== 0) {
+                avatar = result[0].avatar || "default.jpg";            
+            }
+            db.find("users", {}, function(err, result2) {
+                var userList = new Array();
+                for (var i = 0; i < result2.length; i++) {
+                    if (result2[i].username !== req.session.account ){
+                        result2[i].avatar = result2[i].avatar || "default.jpg";
+                        let {password, ...userItem} = result2[i];
+                        userList.push({...userItem});
+                    }
+                }
+                res.render("others", {
+                    "login": true,
+                    "username": req.session.account,
+                    "active": "others",
+                    "avatar": avatar,
+                    "userList": userList,
+                });
+            });    
+        });
+    } else {
+        res.redirect("/login");
+    }
+}
+
+// 点击动态详情进入动态详情页面
+exports.showDynamic = function (req, res, next) {
+    if (req.session.login === "1") {
+        var avatar = "default.jpg";
+        db.find("users", { "username": req.session.account }, function (err, result) {
+            if (result.length !== 0) {
+                avatar = result[0].avatar || "default.jpg";            
+            }
+            var _id = req.params.dynamicid;
+            db.find("posts", {"_id": ObjectID(_id)}, function(err, result2) {
+                console.log(result2);
+                // res.render("post", {
+                //     "login": true,
+                //     "username": req.session.account,
+                //     "active": "post",
+                //     "avatar": avatar,
+                // });
+            });    
+        });
+    } else {
+        res.redirect("/login");
+    }
 }

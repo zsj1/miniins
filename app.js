@@ -32,6 +32,10 @@ app.post("/dopostdynamic", router.doPostDynamic);
 app.get("/getalldynamics", router.doGetAllDynamics);
 app.get("/getuserinfo", router.doGetUserInfo);
 app.get("/getdynamicsamount", router.doGetDynamicsAmount);
+app.get("/user/:userid", router.showUser); 
+app.get("/me", router.showMe);
+app.get("/userlist", router.showUserList);
+app.get("/dynamic/:dynamicid", router.showDynamic); 
 
 
 app.listen(3000);
