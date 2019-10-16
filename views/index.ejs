@@ -42,6 +42,10 @@
       font-family: Arial, Helvetica, sans-serif;
       margin-bottom: 1px;
     }
+
+    #paginatorDiv {
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -100,10 +104,13 @@
   </div>
 
   <div class="container">
-    <div class="row" id="allDynamicDiv">
-
-    </div>
-
+    <% if(login) { %>
+      <div class="row" id="allDynamicDiv">
+      </div>
+      <div id="paginatorDiv"> 
+        <ul id="pageLimit"></ul> 
+      </div>
+    <%}%>
     <hr>
 
     <footer>
@@ -132,36 +139,70 @@
   <script src="/js/underscore-noflect.js"></script>
   <script src="/js/jquery-1.11.3.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/bootstrap-paginator.min.js"></script>
   <script type="text/javascript">
-    // ajax读取动态
+   
+    // 分页配置
     $(function(){
-      var login = <%=login%>;
-      if (login) {
-        $.ajax({
-          url: "/getalldynamics",
-          type: "get",
-          success: function(result){
-            $('#allDynamicDiv').children().remove();
-            var compiled = _.template($('#dynamicDiv').html());
-            (function iterator(i){
-              if (i === result.dynamics.length) {
-                return;
-              }
-              let data = {...result.dynamics[i]};
-              $.ajax({
-                url: `/getuserinfo?username=${result.dynamics[i].username}`,
-                type: "get",
-                success: function (result2) {
-                  data['avatar'] = result2.userInfo.avatar;
-                  $('#allDynamicDiv').append(compiled(data));
-                  iterator(i + 1);
-                },
-              });
-            })(0);
-          }
-        });
-      }
+      var pageSize = 9;
+      getDynamicsByPage(1);
+      $.ajax({
+        url: "/getdynamicsamount",
+        type: "get",
+        success: function (count) {
+          var pageAmount = Math.ceil(Number(count) / parseFloat(pageSize));
+          $('#pageLimit').bootstrapPaginator({
+            currentPage: 1, // 当前页
+            totalPages: pageAmount, // 总页数
+            size: "normal", // 应该是页眉的大小
+            bootstrapMajorVersion: 3,// bootstrap的版本要求
+            alignment: "center",
+            numberOfPages: 5, // 显示的页数
+            // 如下的代码是将页眉显示的中文显示我们自定义的中文
+            itemTexts: function (type, page, current) {
+                  switch (type) {
+                  case "first": return "首页";
+                  case "prev": return "<<";
+                  case "next": return ">>";
+                  case "last": return "末页";
+                  case "page": return page;
+                }
+            },
+            // 给每个页眉绑定一个事件，其实就是ajax请求，其中page变量为当前点击的页上的数字
+            onPageClicked: function (event, originalEvent, type, page) {
+              getDynamicsByPage(page);
+            }
+          });
+        },
+      })
     });
+    // ajax读取动态
+    function getDynamicsByPage(page) {
+      $.ajax({
+        url: `/getalldynamics?page=${page - 1}`,
+        type: "get",
+        success: function(result){
+          $('#allDynamicDiv').children().remove();
+          var compiled = _.template($('#dynamicDiv').html());
+          (function iterator(i){
+            if (i === result.dynamics.length) {
+              return;
+            }
+            let data = {...result.dynamics[i]};
+            $.ajax({
+              url: `/getuserinfo?username=${result.dynamics[i].username}`,
+              type: "get",
+              success: function (result2) {
+                data['avatar'] = result2.userInfo.avatar;
+                $('#allDynamicDiv').append(compiled(data));
+                iterator(i + 1);
+              },
+            });
+          })(0);
+        }
+      });
+    }
+    
     $('input').focus(function () {
         $('#dangerAlert').fadeOut();
     });

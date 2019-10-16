@@ -31,6 +31,7 @@ app.get("/docutavatar", router.doCutAvatar);
 app.post("/dopostdynamic", router.doPostDynamic);
 app.get("/getalldynamics", router.doGetAllDynamics);
 app.get("/getuserinfo", router.doGetUserInfo);
+app.get("/getdynamicsamount", router.doGetDynamicsAmount);
 
 
 app.listen(3000);

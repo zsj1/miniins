@@ -243,12 +243,18 @@ exports.doPostDynamic = function (req, res, next) {
     });
 }
 
-// 列出所有动态业务 未完成后台分页
+// 列出所有动态业务 后台分页
 exports.doGetAllDynamics = function (req, res, next) {
-    // var page = req.query.page;
-    // "pageamount": 10, "page": page, 
-    db.find("posts", {}, {"sort": {"datetime": -1}}, function(err, result) {
+    var page = req.query.page; 
+    db.find("posts", {}, {"pageamount": 9, "page": page, "sort": {"datetime": -1}}, function(err, result) {
         res.json({"dynamics": result});
+    });
+}
+
+// 获取动态总数
+exports.doGetDynamicsAmount = function (req, res, next) {
+    db.getAllCount("posts", function(count) {
+        res.send(count.toString());
     });
 }
 

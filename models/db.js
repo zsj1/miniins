@@ -111,7 +111,7 @@ exports.updateMany = function (collectionName, json1, json2, callback) {
 
 exports.getAllCount = function (collectionName,callback) {
     _connectDB(function (err, db) {
-        db.db('ins').collection(collectionName).count({}).then(function(count) {
+        db.db('ins').collection(collectionName).countDocuments({}).then(function(count) {
             callback(count);
             db.close();
         });
