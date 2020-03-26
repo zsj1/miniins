@@ -201,6 +201,7 @@
               success: function (result2) {
                 data['avatar'] = result2.userInfo.avatar;
                 data['userid'] = result2.userInfo._id;
+                console.log(data)
                 $('#allDynamicDiv').append(compiled(data));
                 iterator(i + 1);
               },

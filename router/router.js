@@ -150,10 +150,17 @@ exports.doLogout = function (req, res, next) {
 // 设置头像页面
 exports.showSetAvatar = function (req, res, next) {
     if (req.session.login === "1") {
-        res.render("setavatar", {
-            "login": true,
-            "username": req.session.account,
-            "active": "settings"
+        let avatar;
+        db.find("users", { "username": req.session.account }, function (err, result) {
+            if (result.length !== 0) {
+                avatar = result[0].avatar || "default.jpg";            
+            }
+            res.render("setavatar", {
+                "login": true,
+                "username": req.session.account,
+                "active": "settings",
+                "avatar": avatar,
+            });
         });
     } else {
         res.setHeader("Content-Type", "text/plain;charset=utf-8");
@@ -284,11 +291,13 @@ exports.showUser = function (req, res, next) {
                     return;
                 }
                 let {password, ...data} = result2[0];
-                data['avatar'] = result2[0].avatar || "default.jpg";  
+                data['avatar'] = result2[0].avatar || "default.jpg";
+                console.log(data, result2[0])
                 db.find("posts", {"username": data['username']}, function(err, result3) {
                     var dynamics = new Array();
                     for (var i = 0; i < result3.length; i++) {
-                        dynamics.push({...result3[i], ...data});
+                        result3[i]['dynamaicId'] = result2[i]['_id']
+                        dynamics.push({...result3[i]});
                     }
                     res.render("user", {
                         "login": true,
@@ -320,6 +329,7 @@ exports.showMe = function (req, res, next) {
             db.find("posts", {"username": req.session.account}, function(err, result2) {
                 var dynamics = new Array();
                 for (var i = 0; i < result2.length; i++) {
+                    result2[i]['dynamaicId'] = result2[i]['_id']
                     dynamics.push({...result2[i], ...data});
                 }
                 res.render("user", {
@@ -378,7 +388,7 @@ exports.showDynamic = function (req, res, next) {
             }
             var _id = req.params.dynamicid;
             db.find("posts", {"_id": ObjectID(_id)}, function(err, result2) {
-                console.log(result2);
+                // console.log(result2);
                 // res.render("post", {
                 //     "login": true,
                 //     "username": req.session.account,
